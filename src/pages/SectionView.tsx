@@ -7,10 +7,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { getThreads, toggleThreadLike } from '../utils/storage';
 import { forumSections } from '../data/mockData';
 import { Thread } from '../types';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 export default function SectionView() {
   const { sectionId } = useParams();
   const { isAuthenticated } = useAuth();
+  const { trackNavigation, trackThread } = useAnalytics();
   const [threads, setThreads] = useState<Thread[]>([]);
   
   // Find the section data
@@ -21,6 +23,9 @@ export default function SectionView() {
 
   useEffect(() => {
     if (!section || !canAccess) return;
+    
+    // Track section view
+    trackNavigation.section(section.id, section.name, section.isPublic);
     
     try {
       const allThreads = getThreads();
@@ -77,13 +82,18 @@ export default function SectionView() {
       console.error('Error loading section threads:', error);
       setThreads([]);
     }
-  }, [sectionId, section, canAccess]);
+  }, [sectionId, section, canAccess, trackNavigation]);
 
   const handleLike = (threadId: string) => {
     if (!isAuthenticated) return;
     
     try {
+      const wasLiked = threads.find(t => t.id === threadId)?.isLiked || false;
       toggleThreadLike(threadId);
+      
+      // Track the like/unlike
+      trackThread.like(threadId, !wasLiked);
+      
       // Refresh the filtered threads
       const allThreads = getThreads();
       const filteredThreads = threads.map(thread => 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Heart, MessageCircle, Pin, Clock, Lock, Globe } from 'lucide-react';
 import { Thread } from '../../types';
 import { Link } from 'react-router-dom';
+import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface ThreadCardProps {
   thread: Thread;
@@ -10,6 +11,8 @@ interface ThreadCardProps {
 }
 
 export default function ThreadCard({ thread, onLike, isAuthenticated = false }: ThreadCardProps) {
+  const { trackThread, trackFeature } = useAnalytics();
+  
   const formatTimeAgo = (date: Date) => {
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
@@ -20,6 +23,23 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
   };
 
   const canAccess = thread.isPublic || isAuthenticated;
+
+  const handleLikeClick = () => {
+    if (canAccess && onLike) {
+      onLike(thread.id);
+      trackThread.like(thread.id, !thread.isLiked);
+    }
+  };
+
+  const handleThreadClick = () => {
+    if (canAccess) {
+      trackThread.view(thread.id, thread.title, thread.isPublic, thread.category, thread.tags);
+    }
+  };
+
+  const handleJoinClick = (source: string) => {
+    trackFeature.joinCommunity(source);
+  };
 
   return (
     <div className={`bg-white rounded-2xl border border-gray-100 hover:border-primary-200 transition-all duration-200 hover:shadow-md ${!canAccess ? 'opacity-60' : ''}`}>
@@ -79,7 +99,7 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
 
         {/* Content */}
         {canAccess ? (
-          <Link to={`/thread/${thread.id}`} className="block group">
+          <Link to={`/thread/${thread.id}`} className="block group" onClick={handleThreadClick}>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
               {thread.title}
             </h3>
@@ -103,6 +123,7 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
               <Link
                 to="/signup"
                 className="inline-block mt-3 text-secondary-600 hover:text-secondary-700 font-medium text-sm"
+                onClick={() => handleJoinClick('thread_card_content')}
               >
                 Join the community →
               </Link>
@@ -131,7 +152,7 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center space-x-6">
             <button
-              onClick={() => canAccess && onLike?.(thread.id)}
+              onClick={handleLikeClick}
               disabled={!canAccess}
               className={`flex items-center space-x-2 transition-colors ${
                 canAccess
@@ -155,6 +176,7 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
             <Link
               to={`/thread/${thread.id}`}
               className="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors"
+              onClick={handleThreadClick}
             >
               Read more →
             </Link>
@@ -162,6 +184,7 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
             <Link
               to="/signup"
               className="text-secondary-600 hover:text-secondary-700 font-medium text-sm transition-colors"
+              onClick={() => handleJoinClick('thread_card_action')}
             >
               Join to read →
             </Link>

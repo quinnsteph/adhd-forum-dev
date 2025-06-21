@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Tag, Eye, Send } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { createThread } from '../utils/storage';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 export default function NewThread() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { trackThread } = useAnalytics();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -35,7 +37,7 @@ export default function NewThread() {
     
     if (!user) return;
     
-    createThread({
+    const thread = createThread({
       title: formData.title,
       content: formData.content,
       author: user,
@@ -44,6 +46,14 @@ export default function NewThread() {
       category: formData.isPublic ? 'public' : 'members-only',
       isPinned: false,
     });
+    
+    // Track thread creation
+    trackThread.create(
+      thread.id,
+      formData.isPublic,
+      formData.isPublic ? 'public' : 'members-only',
+      formData.tags
+    );
     
     navigate('/');
   };

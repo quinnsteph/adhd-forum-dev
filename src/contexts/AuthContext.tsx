@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { User } from '../types';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 interface AuthContextType {
   user: User | null;
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(false);
+  const { trackAuth, setUserProperties } = useAnalytics();
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
@@ -52,17 +54,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setUser(userData);
         localStorage.setItem('adhd-forum-user', JSON.stringify(userData));
+        
+        // Track successful login
+        trackAuth.login('email', true, userData.adhdType);
+        setUserProperties({
+          user_id: userData.id,
+          username: userData.username,
+          adhd_type: userData.adhdType,
+          user_role: userData.role,
+          member_since: userData.joinedAt.toISOString(),
+          is_authenticated: true,
+        });
+        
         return true;
       }
       
+      // Track failed login
+      trackAuth.login('email', false);
       return false;
     } catch (error) {
       console.error('Login error:', error);
+      trackAuth.login('email', false);
       return false;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [trackAuth, setUserProperties]);
 
   const signup = useCallback(async (userData: SignupData): Promise<boolean> => {
     setLoading(true);
@@ -76,6 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const existingUser = users.find((u: { email: string; username: string }) => u.email === userData.email || u.username === userData.username);
       
       if (existingUser) {
+        // Track failed signup - user already exists
+        trackAuth.signup(false, userData.adhdType);
         return false; // User already exists
       }
       
@@ -101,19 +120,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(newUser);
       localStorage.setItem('adhd-forum-user', JSON.stringify(newUser));
       
+      // Track successful signup
+      trackAuth.signup(true, newUser.adhdType);
+      setUserProperties({
+        user_id: newUser.id,
+        username: newUser.username,
+        adhd_type: newUser.adhdType,
+        user_role: newUser.role,
+        member_since: newUser.joinedAt.toISOString(),
+        is_authenticated: true,
+      });
+      
       return true;
     } catch (error) {
       console.error('Signup error:', error);
+      trackAuth.signup(false, userData.adhdType);
       return false;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [trackAuth, setUserProperties]);
 
   const logout = useCallback(() => {
+    trackAuth.logout();
     setUser(null);
     localStorage.removeItem('adhd-forum-user');
-  }, []);
+  }, [trackAuth]);
 
   const value = {
     user,
