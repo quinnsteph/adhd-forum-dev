@@ -1,32 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Globe, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThreadCard from '../components/Thread/ThreadCard';
 import TopicsSidebar from '../components/Sidebar/TopicsSidebar';
 import ForumSectionCard from '../components/Forum/ForumSectionCard';
-import { mockThreads, forumSections } from '../data/mockData';
+import { useAuth } from '../contexts/AuthContext';
+import { getThreads, toggleThreadLike } from '../utils/storage';
+import { forumSections } from '../data/mockData';
+import { Thread } from '../types';
 
 interface HomeProps {
   focusMode: boolean;
-  isAuthenticated?: boolean;
 }
 
-export default function Home({ focusMode, isAuthenticated = false }: HomeProps) {
-  const [threads, setThreads] = useState(mockThreads);
+export default function Home({ focusMode }: HomeProps) {
+  const { isAuthenticated } = useAuth();
+  const [threads, setThreads] = useState<Thread[]>([]);
   const [filter, setFilter] = useState<'all' | 'public' | 'members'>('all');
+
+  useEffect(() => {
+    setThreads(getThreads());
+  }, []);
 
   const handleLike = (threadId: string) => {
     if (!isAuthenticated) return;
     
-    setThreads(threads.map(thread => 
-      thread.id === threadId 
-        ? { 
-            ...thread, 
-            isLiked: !thread.isLiked,
-            likes: thread.isLiked ? thread.likes - 1 : thread.likes + 1
-          }
-        : thread
-    ));
+    toggleThreadLike(threadId);
+    setThreads(getThreads()); // Refresh from storage
   };
 
   const filteredThreads = threads.filter(thread => {
@@ -97,7 +97,7 @@ export default function Home({ focusMode, isAuthenticated = false }: HomeProps) 
                 ].map(({ key, label, icon: Icon }) => (
                   <button
                     key={key}
-                    onClick={() => setFilter(key as any)}
+                    onClick={() => setFilter(key as 'all' | 'public' | 'members')}
                     className={`flex items-center space-x-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                       filter === key
                         ? 'bg-white text-primary-600 shadow-sm'

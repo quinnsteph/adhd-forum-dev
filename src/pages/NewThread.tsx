@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Tag, Eye, Send } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { createThread } from '../utils/storage';
 
 export default function NewThread() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     tags: [] as string[],
+    isPublic: true,
   });
   const [isPreview, setIsPreview] = useState(false);
 
@@ -28,7 +32,19 @@ export default function NewThread() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('New thread:', formData);
+    
+    if (!user) return;
+    
+    createThread({
+      title: formData.title,
+      content: formData.content,
+      author: user,
+      tags: formData.tags,
+      isPublic: formData.isPublic,
+      category: formData.isPublic ? 'public' : 'members-only',
+      isPinned: false,
+    });
+    
     navigate('/');
   };
 
@@ -138,6 +154,41 @@ Remember: There's no judgment here – we're all learning together! 💙"
                 </div>
               )}
             </div>
+
+            {/* Visibility Settings */}
+            {!isPreview && (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">Thread Visibility</h3>
+                <div className="space-y-3">
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="visibility"
+                      checked={formData.isPublic}
+                      onChange={() => setFormData({ ...formData, isPublic: true })}
+                      className="mt-1 text-primary-600 focus:ring-primary-500"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900">Public Discussion</div>
+                      <div className="text-sm text-gray-600">Visible to everyone, including visitors</div>
+                    </div>
+                  </label>
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="visibility"
+                      checked={!formData.isPublic}
+                      onChange={() => setFormData({ ...formData, isPublic: false })}
+                      className="mt-1 text-secondary-600 focus:ring-secondary-500"
+                    />
+                    <div>
+                      <div className="font-medium text-gray-900">Members Only</div>
+                      <div className="text-sm text-gray-600">Only visible to registered members</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
 
             {/* Tags Selection */}
             {!isPreview && (

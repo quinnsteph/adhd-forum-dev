@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Brain, Menu, X, Focus, Globe, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface HeaderProps {
   focusMode: boolean;
   onToggleFocus: () => void;
-  isAuthenticated?: boolean;
 }
 
-export default function Header({ focusMode, onToggleFocus, isAuthenticated = false }: HeaderProps) {
+export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -71,13 +72,16 @@ export default function Header({ focusMode, onToggleFocus, isAuthenticated = fal
                 <>
                   <div className="flex items-center space-x-2">
                     <img
-                      src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"
+                      src={user?.avatar || "https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    <span className="text-gray-700 font-medium">You</span>
+                    <span className="text-gray-700 font-medium">{user?.username || 'You'}</span>
                   </div>
-                  <button className="text-gray-500 hover:text-gray-700 font-medium">
+                  <button 
+                    onClick={logout}
+                    className="text-gray-500 hover:text-gray-700 font-medium"
+                  >
                     Sign Out
                   </button>
                 </>
@@ -128,13 +132,16 @@ export default function Header({ focusMode, onToggleFocus, isAuthenticated = fal
                   <>
                     <div className="flex items-center space-x-2">
                       <img
-                        src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"
+                        src={user?.avatar || "https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"}
                         alt="Profile"
                         className="w-8 h-8 rounded-full object-cover"
                       />
-                      <span className="text-gray-700 font-medium">You</span>
+                      <span className="text-gray-700 font-medium">{user?.username || 'You'}</span>
                     </div>
-                    <button className="block text-gray-500 hover:text-gray-700 font-medium">
+                    <button 
+                      onClick={logout}
+                      className="block text-gray-500 hover:text-gray-700 font-medium"
+                    >
                       Sign Out
                     </button>
                   </>

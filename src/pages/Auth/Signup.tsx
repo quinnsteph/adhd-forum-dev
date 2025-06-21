@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Brain, Eye, EyeOff, Check } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const { signup, loading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -20,9 +24,22 @@ export default function Signup() {
     { value: 'prefer-not-to-say', label: 'Prefer Not to Say' },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Signup attempt:', formData);
+    setError('');
+    
+    const success = await signup({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      adhdType: formData.adhdType || undefined,
+    });
+    
+    if (success) {
+      navigate('/');
+    } else {
+      setError('Username or email already exists. Please try different credentials.');
+    }
   };
 
   return (
@@ -43,6 +60,11 @@ export default function Signup() {
 
         {/* Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
@@ -145,10 +167,10 @@ export default function Signup() {
 
             <button
               type="submit"
-              disabled={!formData.agreeToTerms}
+              disabled={!formData.agreeToTerms || loading}
               className="w-full bg-secondary-500 text-white py-3 px-4 rounded-xl hover:bg-secondary-600 transition-colors font-medium focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 

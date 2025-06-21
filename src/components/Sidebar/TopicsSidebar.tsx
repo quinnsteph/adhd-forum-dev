@@ -1,6 +1,5 @@
 import React from 'react';
-import { TrendingUp, Users, Lightbulb, Lock, Globe } from 'lucide-react';
-import { Topic } from '../../types';
+import { TrendingUp, Users, Lightbulb, Lock } from 'lucide-react';
 import { mockTopics } from '../../data/mockData';
 
 interface TopicsSidebarProps {

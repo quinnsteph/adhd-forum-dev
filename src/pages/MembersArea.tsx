@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, Heart, Shield, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ThreadCard from '../components/Thread/ThreadCard';
-import { mockThreads } from '../data/mockData';
+import { getThreads, toggleThreadLike } from '../utils/storage';
+import { Thread } from '../types';
 
 export default function MembersArea() {
-  const [threads, setThreads] = useState(mockThreads.filter(t => !t.isPublic));
+  const [threads, setThreads] = useState<Thread[]>([]);
   const [activeTab, setActiveTab] = useState<'all' | 'support' | 'personal'>('all');
 
+  useEffect(() => {
+    setThreads(getThreads().filter(t => !t.isPublic));
+  }, []);
+
   const handleLike = (threadId: string) => {
-    setThreads(threads.map(thread => 
-      thread.id === threadId 
-        ? { 
-            ...thread, 
-            isLiked: !thread.isLiked,
-            likes: thread.isLiked ? thread.likes - 1 : thread.likes + 1
-          }
-        : thread
-    ));
+    toggleThreadLike(threadId);
+    setThreads(getThreads().filter(t => !t.isPublic)); // Refresh from storage
   };
 
   const filteredThreads = threads.filter(thread => {
@@ -89,7 +87,7 @@ export default function MembersArea() {
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => setActiveTab(key as any)}
+              onClick={() => setActiveTab(key as 'all' | 'support' | 'personal')}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === key
                   ? 'bg-white text-secondary-600 shadow-sm'

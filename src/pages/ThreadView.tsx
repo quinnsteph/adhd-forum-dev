@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Heart, MessageCircle, Share2, Flag, Clock } from 'lucide-react';
-import { mockThreads, mockComments } from '../data/mockData';
+import { getThread, getComments, createComment, toggleThreadLike, toggleCommentLike } from '../utils/storage';
+import { useAuth } from '../contexts/AuthContext';
 import { Comment } from '../types';
 
 export default function ThreadView() {
   const { id } = useParams();
-  const thread = mockThreads.find(t => t.id === id);
-  const [comments, setComments] = useState(mockComments.filter(c => c.threadId === id));
+  const { user, isAuthenticated } = useAuth();
+  const [thread, setThread] = useState(getThread(id!));
+  const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [isLiked, setIsLiked] = useState(thread?.isLiked || false);
-  const [likes, setLikes] = useState(thread?.likes || 0);
+
+  useEffect(() => {
+    if (id) {
+      setComments(getComments(id));
+    }
+  }, [id]);
 
   if (!thread) {
     return (
@@ -26,31 +32,30 @@ export default function ThreadView() {
   }
 
   const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(isLiked ? likes - 1 : likes + 1);
+    if (!isAuthenticated || !id) return;
+    toggleThreadLike(id);
+    setThread(getThread(id));
+  };
+
+  const handleCommentLike = (commentId: string) => {
+    if (!isAuthenticated) return;
+    toggleCommentLike(commentId);
+    setComments(getComments(id!));
   };
 
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || !user || !id) return;
 
-    const comment: Comment = {
-      id: Date.now().toString(),
+    createComment({
       content: newComment,
-      author: {
-        id: 'current-user',
-        username: 'You',
-        avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
-        joinedAt: new Date(),
-      },
-      createdAt: new Date(),
-      likes: 0,
-      isLiked: false,
-      threadId: id!,
-    };
+      author: user,
+      threadId: id,
+    });
 
-    setComments([...comments, comment]);
+    setComments(getComments(id));
     setNewComment('');
+    setThread(getThread(id)); // Update thread to refresh comment count
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -141,14 +146,15 @@ export default function ThreadView() {
           <div className="flex items-center space-x-6 mt-6 pt-6 border-t border-gray-100">
             <button
               onClick={handleLike}
-              className={`flex items-center space-x-2 transition-colors ${
-                isLiked
+              disabled={!isAuthenticated}
+              className={`flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                thread.isLiked
                   ? 'text-coral hover:text-red-500'
                   : 'text-gray-500 hover:text-coral'
               }`}
             >
-              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-              <span className="font-medium">{likes}</span>
+              <Heart className={`w-5 h-5 ${thread.isLiked ? 'fill-current' : ''}`} />
+              <span className="font-medium">{thread.likes}</span>
             </button>
             
             <div className="flex items-center space-x-2 text-gray-500">
@@ -166,13 +172,14 @@ export default function ThreadView() {
         </h2>
 
         {/* Add Comment Form */}
-        <form onSubmit={handleSubmitComment} className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
-          <div className="flex items-start space-x-4">
-            <img
-              src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"
-              alt="Your avatar"
-              className="w-10 h-10 rounded-full object-cover"
-            />
+        {isAuthenticated ? (
+          <form onSubmit={handleSubmitComment} className="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
+            <div className="flex items-start space-x-4">
+              <img
+                src={user?.avatar || "https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop"}
+                alt="Your avatar"
+                className="w-10 h-10 rounded-full object-cover"
+              />
             <div className="flex-1">
               <textarea
                 value={newComment}
@@ -193,6 +200,17 @@ export default function ThreadView() {
             </div>
           </div>
         </form>
+        ) : (
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-6 text-center">
+            <p className="text-gray-600 mb-4">Join the conversation! Sign in to post a comment.</p>
+            <Link 
+              to="/login" 
+              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium"
+            >
+              Sign In
+            </Link>
+          </div>
+        )}
 
         {/* Comments List */}
         <div className="space-y-6">
@@ -213,8 +231,16 @@ export default function ThreadView() {
                     {comment.content}
                   </p>
                   <div className="flex items-center space-x-4">
-                    <button className="flex items-center space-x-1 text-gray-500 hover:text-coral transition-colors">
-                      <Heart className="w-4 h-4" />
+                    <button 
+                      onClick={() => handleCommentLike(comment.id)}
+                      disabled={!isAuthenticated}
+                      className={`flex items-center space-x-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        comment.isLiked 
+                          ? 'text-coral hover:text-red-500' 
+                          : 'text-gray-500 hover:text-coral'
+                      }`}
+                    >
+                      <Heart className={`w-4 h-4 ${comment.isLiked ? 'fill-current' : ''}`} />
                       <span className="text-sm font-medium">{comment.likes}</span>
                     </button>
                     <button className="text-sm text-gray-500 hover:text-primary-600 transition-colors font-medium">
