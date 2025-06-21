@@ -10,12 +10,21 @@ export default function MembersArea() {
   const [activeTab, setActiveTab] = useState<'all' | 'support' | 'personal'>('all');
 
   useEffect(() => {
-    setThreads(getThreads().filter(t => !t.isPublic));
+    try {
+      setThreads(getThreads().filter(t => !t.isPublic));
+    } catch (error) {
+      console.error('Error loading member threads:', error);
+      setThreads([]);
+    }
   }, []);
 
   const handleLike = (threadId: string) => {
-    toggleThreadLike(threadId);
-    setThreads(getThreads().filter(t => !t.isPublic)); // Refresh from storage
+    try {
+      toggleThreadLike(threadId);
+      setThreads(getThreads().filter(t => !t.isPublic)); // Refresh from storage
+    } catch (error) {
+      console.error('Error toggling thread like in members area:', error);
+    }
   };
 
   const filteredThreads = threads.filter(thread => {

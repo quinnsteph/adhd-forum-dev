@@ -24,7 +24,20 @@ export function initializeStorage() {
 // Thread functions
 export function getThreads(): Thread[] {
   const threads = localStorage.getItem(STORAGE_KEYS.THREADS);
-  return threads ? JSON.parse(threads) : [];
+  if (!threads) return [];
+  
+  const parsedThreads = JSON.parse(threads);
+  
+  // Convert date strings back to Date objects
+  return parsedThreads.map((thread: Thread & { createdAt: string; updatedAt: string; author: { joinedAt: string } }) => ({
+    ...thread,
+    createdAt: new Date(thread.createdAt),
+    updatedAt: new Date(thread.updatedAt),
+    author: {
+      ...thread.author,
+      joinedAt: new Date(thread.author.joinedAt)
+    }
+  }));
 }
 
 export function getThread(id: string): Thread | null {
@@ -78,7 +91,19 @@ export function toggleThreadLike(threadId: string): boolean {
 // Comment functions
 export function getComments(threadId?: string): Comment[] {
   const comments = localStorage.getItem(STORAGE_KEYS.COMMENTS);
-  const allComments = comments ? JSON.parse(comments) : [];
+  if (!comments) return [];
+  
+  const parsedComments = JSON.parse(comments);
+  
+  // Convert date strings back to Date objects
+  const allComments = parsedComments.map((comment: Comment & { createdAt: string; author: { joinedAt: string } }) => ({
+    ...comment,
+    createdAt: new Date(comment.createdAt),
+    author: {
+      ...comment.author,
+      joinedAt: new Date(comment.author.joinedAt)
+    }
+  }));
   
   if (threadId) {
     return allComments.filter((comment: Comment) => comment.threadId === threadId);

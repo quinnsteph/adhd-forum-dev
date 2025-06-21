@@ -14,7 +14,12 @@ export default function ThreadView() {
 
   useEffect(() => {
     if (id) {
-      setComments(getComments(id));
+      try {
+        setComments(getComments(id));
+      } catch (error) {
+        console.error('Error loading comments:', error);
+        setComments([]);
+      }
     }
   }, [id]);
 

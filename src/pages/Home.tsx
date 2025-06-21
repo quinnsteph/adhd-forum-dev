@@ -19,21 +19,39 @@ export default function Home({ focusMode }: HomeProps) {
   const [filter, setFilter] = useState<'all' | 'public' | 'members'>('all');
 
   useEffect(() => {
-    setThreads(getThreads());
+    try {
+      setThreads(getThreads());
+    } catch (error) {
+      console.error('Error loading threads:', error);
+      setThreads([]);
+    }
   }, []);
 
   const handleLike = (threadId: string) => {
     if (!isAuthenticated) return;
     
-    toggleThreadLike(threadId);
-    setThreads(getThreads()); // Refresh from storage
+    try {
+      toggleThreadLike(threadId);
+      setThreads(getThreads()); // Refresh from storage
+    } catch (error) {
+      console.error('Error toggling thread like:', error);
+    }
   };
 
   const filteredThreads = threads.filter(thread => {
     if (filter === 'public') return thread.isPublic;
     if (filter === 'members') return !thread.isPublic && isAuthenticated;
     return thread.isPublic || isAuthenticated;
-  }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }).sort((a, b) => {
+    try {
+      const dateA = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+      const dateB = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    } catch (error) {
+      console.error('Error sorting threads:', error);
+      return 0;
+    }
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
