@@ -6,6 +6,7 @@ import Header from './components/Layout/Header';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import MembersArea from './pages/MembersArea';
+import SectionView from './pages/SectionView';
 import ThreadView from './pages/ThreadView';
 import NewThread from './pages/NewThread';
 import Login from './pages/Auth/Login';
@@ -34,6 +35,7 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
+        <Route path="/section/:sectionId" element={<SectionView />} />
         <Route path="/thread/:id" element={<ThreadView />} />
         <Route 
           path="/new-thread" 

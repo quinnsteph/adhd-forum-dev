@@ -226,6 +226,71 @@ This feels like such a vulnerable topic but I know this community gets it.`,
     isPublic: false,
     category: 'support-groups',
   },
+  {
+    id: '6',
+    title: 'New to ADHD diagnosis - where do I start?',
+    content: `Just got diagnosed with ADHD at 28 and feeling overwhelmed. There's so much information out there - medications, therapy, life strategies. 
+
+Where did you all start your journey? What would you wish someone had told you when you were first diagnosed?
+
+Looking for some guidance from this amazing community! 💙`,
+    author: mockUsers[1],
+    createdAt: new Date('2024-01-10T14:20:00'),
+    updatedAt: new Date('2024-01-10T14:20:00'),
+    tags: ['Getting Started', 'New Member', 'Diagnosis'],
+    likes: 31,
+    commentCount: 16,
+    isLiked: false,
+    isPinned: false,
+    isPublic: true,
+    category: 'public',
+  },
+  {
+    id: '7',
+    title: 'Amazing ADHD apps and tools that actually work',
+    content: `I've tried countless productivity apps and tools over the years. Here are the ones that have actually stuck and made a difference in my daily life:
+
+📱 **Apps:**
+- Forest (for focus sessions)
+- Todoist (with natural language processing)
+- RescueTime (for time tracking)
+
+🛠️ **Physical tools:**
+- Bullet journal (simplified version)
+- Fidget cube for meetings
+- Noise-canceling headphones
+
+What tools have been game-changers for you?`,
+    author: mockUsers[2],
+    createdAt: new Date('2024-01-09T16:45:00'),
+    updatedAt: new Date('2024-01-09T16:45:00'),
+    tags: ['Resources', 'Tools', 'Apps', 'Productivity'],
+    likes: 45,
+    commentCount: 23,
+    isLiked: true,
+    isPinned: false,
+    isPublic: true,
+    category: 'public',
+  },
+  {
+    id: '8',
+    title: 'Anyone else struggle with emotional regulation today?',
+    content: `Having one of those days where everything feels too much. Small annoyances feel huge, and I'm snapping at people I care about.
+
+The rational part of my brain knows this will pass, but in the moment it's so hard to remember coping strategies.
+
+How do you handle the emotional rollercoaster days? Especially when you're around others who don't quite understand? ❤️`,
+    author: mockUsers[0],
+    createdAt: new Date('2024-01-08T11:30:00'),
+    updatedAt: new Date('2024-01-08T11:30:00'),
+    tags: ['Emotional Regulation', 'Support', 'RSD', 'Coping'],
+    likes: 38,
+    commentCount: 14,
+    isLiked: false,
+    isPinned: false,
+    isPublic: false,
+    category: 'members-only',
+  },
 ];
 
 export const mockComments: Comment[] = [
