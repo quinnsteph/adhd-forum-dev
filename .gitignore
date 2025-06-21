@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Analytics Development Files
+service-account-key.json
+*.cjs
+package-gtm.json
+GTM_API_SETUP.md
+gtm-container-adhd-forum.json
