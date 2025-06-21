@@ -1,14 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, Users, Lightbulb, Lock } from 'lucide-react';
-import { mockTopics } from '../../data/mockData';
+import { mockTopics, mockUsers } from '../../data/mockData';
 
 interface TopicsSidebarProps {
   isVisible: boolean;
   isAuthenticated?: boolean;
 }
 
+// Generate additional random members for online list
+const additionalMembers = [
+    {
+      id: 'member1',
+      username: 'ADHDWarrior',
+      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      adhdType: 'Combined Type',
+      joinedAt: new Date('2023-08-15'),
+      isOnline: true,
+      role: 'member' as const,
+    },
+    {
+      id: 'member2', 
+      username: 'QuietFocus',
+      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      adhdType: 'Inattentive',
+      joinedAt: new Date('2023-09-01'),
+      isOnline: true,
+      role: 'member' as const,
+    },
+    {
+      id: 'member3',
+      username: 'EnergyBurst',
+      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      adhdType: 'Hyperactive-Impulsive',
+      joinedAt: new Date('2023-07-20'),
+      isOnline: true,
+      role: 'member' as const,
+    },
+    {
+      id: 'member4',
+      username: 'MindfulMoments',
+      avatar: 'https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      adhdType: 'Combined Type',
+      joinedAt: new Date('2023-06-10'),
+      isOnline: true,
+      role: 'member' as const,
+    },
+    {
+      id: 'member5',
+      username: 'TaskMaster',
+      avatar: 'https://images.pexels.com/photos/1300402/pexels-photo-1300402.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      adhdType: 'Inattentive',
+      joinedAt: new Date('2023-05-05'),
+      isOnline: true,
+      role: 'member' as const,
+    },
+  ];
+
 export default function TopicsSidebar({ isVisible, isAuthenticated = false }: TopicsSidebarProps) {
-  if (!isVisible) return null;
+  const [onlineMembers, setOnlineMembers] = useState<typeof mockUsers>([]);
 
   const motivationalQuotes = [
     "Your ADHD brain is not broken. It's different, and different can be wonderful.",
@@ -22,7 +71,27 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
     "Set a timer for 15 minutes and tackle one small task.",
   ];
 
+  const allMembers = useMemo(() => [...mockUsers, ...additionalMembers], []);
+
+  // Randomize online members every component mount and periodically
+  useEffect(() => {
+    const updateOnlineMembers = () => {
+      const shuffled = [...allMembers].sort(() => Math.random() - 0.5);
+      const randomCount = Math.floor(Math.random() * 3) + 3; // 3-5 members online
+      setOnlineMembers(shuffled.slice(0, randomCount));
+    };
+
+    updateOnlineMembers();
+    
+    // Update every 30 seconds to simulate members coming/going
+    const interval = setInterval(updateOnlineMembers, 30000);
+    
+    return () => clearInterval(interval);
+  }, [allMembers]);
+
   const visibleTopics = mockTopics.filter(topic => topic.isPublic || isAuthenticated);
+
+  if (!isVisible) return null;
 
   return (
     <aside className="w-80 space-y-6">
@@ -57,6 +126,59 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
             <a href="/signup" className="text-secondary-600 hover:text-secondary-700 font-medium text-sm">
               Become a member →
             </a>
+          </div>
+        )}
+      </div>
+
+      {/* Members Online */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <h2 className="font-semibold text-gray-900">Members Online</h2>
+          </div>
+          <span className="text-sm text-green-600 font-medium">{onlineMembers.length}</span>
+        </div>
+        <div className="space-y-3">
+          {onlineMembers.map((member) => (
+            <div key={member.id} className="flex items-center space-x-3">
+              <div className="relative">
+                <img
+                  src={member.avatar}
+                  alt={member.username}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-900 truncate">
+                    {member.username}
+                  </span>
+                  {member.role === 'moderator' && (
+                    <div className="w-4 h-4 bg-primary-100 text-primary-600 rounded text-xs flex items-center justify-center font-bold">
+                      M
+                    </div>
+                  )}
+                  {member.isVerified && (
+                    <div className="w-3 h-3 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    </div>
+                  )}
+                </div>
+                {member.adhdType && (
+                  <p className="text-xs text-gray-500 truncate">{member.adhdType}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {onlineMembers.length > 5 && (
+          <div className="mt-3 pt-3 border-t border-gray-100 text-center">
+            <span className="text-xs text-gray-500">
+              +{Math.floor(Math.random() * 20) + 10} more members online
+            </span>
           </div>
         )}
       </div>
@@ -100,7 +222,7 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Online Now</span>
-            <span className="font-semibold text-green-600">142</span>
+            <span className="font-semibold text-green-600">{Math.floor(Math.random() * 50) + 120}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Public Threads</span>
