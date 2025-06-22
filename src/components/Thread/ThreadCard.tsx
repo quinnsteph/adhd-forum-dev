@@ -1,7 +1,6 @@
 import React from 'react';
 import { Heart, MessageCircle, Pin, Clock, Lock, Globe } from 'lucide-react';
 import { Thread } from '../../types';
-import { Link } from 'react-router-dom';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface ThreadCardProps {
@@ -99,14 +98,14 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
 
         {/* Content */}
         {canAccess ? (
-          <Link to={`/thread/${thread.id}`} className="block group" onClick={handleThreadClick}>
+          <a href={`/thread/${thread.id}`} className="block group" onClick={handleThreadClick}>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
               {thread.title}
             </h3>
             <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed">
               {thread.content}
             </p>
-          </Link>
+          </a>
         ) : (
           <div className="group">
             <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2">
@@ -120,13 +119,13 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
               <p className="text-sm text-gray-600 mt-2">
                 Join our community to access this discussion and connect with others who understand your journey.
               </p>
-              <Link
-                to="/signup"
+              <a
+                href="/signup"
                 className="inline-block mt-3 text-secondary-600 hover:text-secondary-700 font-medium text-sm"
                 onClick={() => handleJoinClick('thread_card_content')}
               >
                 Join the community →
-              </Link>
+              </a>
             </div>
           </div>
         )}
@@ -173,21 +172,21 @@ export default function ThreadCard({ thread, onLike, isAuthenticated = false }: 
           </div>
 
           {canAccess ? (
-            <Link
-              to={`/thread/${thread.id}`}
+            <a
+              href={`/thread/${thread.id}`}
               className="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors"
               onClick={handleThreadClick}
             >
               Read more →
-            </Link>
+            </a>
           ) : (
-            <Link
-              to="/signup"
+            <a
+              href="/signup"
               className="text-secondary-600 hover:text-secondary-700 font-medium text-sm transition-colors"
               onClick={() => handleJoinClick('thread_card_action')}
             >
               Join to read →
-            </Link>
+            </a>
           )}
         </div>
       </div>

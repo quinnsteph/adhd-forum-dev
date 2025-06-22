@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, Menu, X, Focus, Globe, Lock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAnalytics } from '../../hooks/useAnalytics';
 
@@ -28,7 +28,7 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
+          <a href="/" className="flex items-center space-x-2 group">
             <div className="p-2 rounded-xl bg-primary-50 group-hover:bg-primary-100 transition-colors">
               <Brain className="h-6 w-6 text-primary-600" />
             </div>
@@ -36,12 +36,12 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
               <h1 className="text-xl font-display font-bold text-gray-900">ADHD Forum</h1>
               <p className="text-xs text-gray-500 -mt-1">Safe space for support</p>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
+            <a 
+              href="/" 
               className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
               onClick={() => handleNavigationClick('public', true)}
             >
@@ -49,10 +49,10 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
                 <Globe className="w-4 h-4" />
                 <span>Public</span>
               </div>
-            </Link>
+            </a>
             {isAuthenticated && (
-              <Link 
-                to="/members" 
+              <a 
+                href="/members" 
                 className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
                 onClick={() => handleNavigationClick('members', false)}
               >
@@ -60,14 +60,14 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
                   <Lock className="w-4 h-4" />
                   <span>Members</span>
                 </div>
-              </Link>
+              </a>
             )}
-            <Link to="/topics" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+            <a href="/topics" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
               Topics
-            </Link>
-            <Link to="/new-thread" className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+            </a>
+            <a href="/new-thread" className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium">
               New Thread
-            </Link>
+            </a>
           </nav>
 
           {/* Right Side Controls */}
@@ -106,12 +106,12 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
                 </>
               ) : (
                 <>
-                  <Link to="/login" className="text-gray-700 hover:text-primary-600 font-medium">
+                  <a href="/login" className="text-gray-700 hover:text-primary-600 font-medium">
                     Sign In
-                  </Link>
-                  <Link to="/signup" className="bg-secondary-500 text-white px-4 py-2 rounded-lg hover:bg-secondary-600 transition-colors font-medium">
+                  </a>
+                  <a href="/signup" className="bg-secondary-500 text-white px-4 py-2 rounded-lg hover:bg-secondary-600 transition-colors font-medium">
                     Join Us
-                  </Link>
+                  </a>
                 </>
               )}
             </div>
@@ -130,22 +130,22 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
             <div className="space-y-4">
-              <Link to="/" className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium">
+              <a href="/" className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium">
                 <Globe className="w-4 h-4" />
                 <span>Public Discussions</span>
-              </Link>
+              </a>
               {isAuthenticated && (
-                <Link to="/members" className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium">
+                <a href="/members" className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium">
                   <Lock className="w-4 h-4" />
                   <span>Members Only</span>
-                </Link>
+                </a>
               )}
-              <Link to="/topics" className="block text-gray-700 hover:text-primary-600 font-medium">
+              <a href="/topics" className="block text-gray-700 hover:text-primary-600 font-medium">
                 Topics
-              </Link>
-              <Link to="/new-thread" className="block bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium text-center">
+              </a>
+              <a href="/new-thread" className="block bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium text-center">
                 New Thread
-              </Link>
+              </a>
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 {isAuthenticated ? (
                   <>
@@ -166,12 +166,12 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
                   </>
                 ) : (
                   <>
-                    <Link to="/login" className="block text-gray-700 hover:text-primary-600 font-medium">
+                    <a href="/login" className="block text-gray-700 hover:text-primary-600 font-medium">
                       Sign In
-                    </Link>
-                    <Link to="/signup" className="block bg-secondary-500 text-white px-4 py-2 rounded-lg hover:bg-secondary-600 transition-colors font-medium text-center">
+                    </a>
+                    <a href="/signup" className="block bg-secondary-500 text-white px-4 py-2 rounded-lg hover:bg-secondary-600 transition-colors font-medium text-center">
                       Join Us
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>

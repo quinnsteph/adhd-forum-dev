@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Globe, Users, Heart, BookOpen, Bookmark, Lock } from 'lucide-react';
 import { ForumSection } from '../../types';
 
@@ -61,19 +60,19 @@ export default function ForumSectionCard({ section, isAuthenticated = false }: F
           </div>
 
           {canAccess ? (
-            <Link
-              to={`/section/${section.id}`}
+            <a
+              href={`/section/${section.id}`}
               className="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors"
             >
               Browse →
-            </Link>
+            </a>
           ) : (
-            <Link
-              to="/signup"
+            <a
+              href="/signup"
               className="text-secondary-600 hover:text-secondary-700 font-medium text-sm transition-colors"
             >
               Join to Access →
-            </Link>
+            </a>
           )}
         </div>
       </div>
