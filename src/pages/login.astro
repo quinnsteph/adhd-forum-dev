@@ -1,0 +1,34 @@
+---
+import Layout from '../components/Layout.astro';
+import { Brain } from 'lucide-react';
+import LoginForm from '../components/Auth/LoginForm';
+---
+
+<Layout title="Login - ADHD Forum">
+  <div class="min-h-screen bg-gradient-to-br from-primary-50 via-background to-secondary-50 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-2xl mb-4">
+          <Brain className="w-8 h-8 text-primary-600" />
+        </div>
+        <h1 class="text-3xl font-display font-bold text-gray-900 mb-2">
+          Welcome back!
+        </h1>
+        <p class="text-gray-600">
+          Sign in to reconnect with your ADHD community
+        </p>
+      </div>
+
+      <!-- Form -->
+      <LoginForm client:load />
+
+      <!-- Community Message -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-gray-500">
+          🌟 Join thousands finding support, understanding, and friendship
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

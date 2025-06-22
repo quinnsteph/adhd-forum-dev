@@ -23,8 +23,13 @@ export function initializeStorage() {
 
 // Thread functions
 export function getThreads(): Thread[] {
+  if (typeof window === 'undefined') {
+    // Return mock data during SSR
+    return mockThreads;
+  }
+  
   const threads = localStorage.getItem(STORAGE_KEYS.THREADS);
-  if (!threads) return [];
+  if (!threads) return mockThreads;
   
   const parsedThreads = JSON.parse(threads);
   

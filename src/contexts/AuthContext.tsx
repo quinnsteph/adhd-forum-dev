@@ -22,8 +22,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('adhd-forum-user');
-    return stored ? JSON.parse(stored) : null;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('adhd-forum-user');
+      return stored ? JSON.parse(stored) : null;
+    }
+    return null;
   });
   const [loading, setLoading] = useState(false);
   const { trackAuth, setUserProperties } = useAnalytics();
@@ -36,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Check if user exists in localStorage
+      if (typeof window === 'undefined') return false;
       const users = JSON.parse(localStorage.getItem('adhd-forum-users') || '[]');
       const existingUser = users.find((u: { email: string; password: string }) => u.email === email && u.password === password);
       
@@ -89,6 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Check if user already exists
+      if (typeof window === 'undefined') return false;
       const users = JSON.parse(localStorage.getItem('adhd-forum-users') || '[]');
       const existingUser = users.find((u: { email: string; username: string }) => u.email === userData.email || u.username === userData.username);
       
@@ -144,7 +149,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     trackAuth.logout();
     setUser(null);
-    localStorage.removeItem('adhd-forum-user');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('adhd-forum-user');
+    }
   }, [trackAuth]);
 
   const value = {

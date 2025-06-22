@@ -1,0 +1,178 @@
+import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import AuthProvider from '../AuthProvider';
+
+function SignupFormContent() {
+  const { signup, loading } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    adhdType: '',
+    agreeToTerms: false,
+  });
+
+  const adhdTypes = [
+    { value: 'inattentive', label: 'Primarily Inattentive' },
+    { value: 'hyperactive', label: 'Primarily Hyperactive-Impulsive' },
+    { value: 'combined', label: 'Combined Type' },
+    { value: 'not-diagnosed', label: 'Not Diagnosed / Exploring' },
+    { value: 'prefer-not-to-say', label: 'Prefer Not to Say' },
+  ];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    const success = await signup({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      adhdType: formData.adhdType || undefined,
+    });
+    
+    if (success) {
+      window.location.href = '/';
+    } else {
+      setError('Username or email already exists. Please try different credentials.');
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            Username
+          </label>
+          <input
+            id="username"
+            type="text"
+            required
+            value={formData.username}
+            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all"
+            placeholder="Choose a username"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email address
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all"
+              placeholder="Create a password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="adhdType" className="block text-sm font-medium text-gray-700 mb-2">
+            ADHD Type <span className="text-gray-400">(Optional)</span>
+          </label>
+          <select
+            id="adhdType"
+            value={formData.adhdType}
+            onChange={(e) => setFormData({ ...formData, adhdType: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-secondary-500 focus:border-transparent transition-all"
+          >
+            <option value="">Select if you'd like to share</option>
+            {adhdTypes.map((type) => (
+              <option key={type.value} value={type.value}>
+                {type.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            This helps us personalize your experience and is never required
+          </p>
+        </div>
+
+        <div className="flex items-start space-x-3">
+          <div className="flex items-center">
+            <input
+              id="terms"
+              type="checkbox"
+              checked={formData.agreeToTerms}
+              onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
+              className="rounded border-gray-300 text-secondary-600 focus:ring-secondary-500"
+              required
+            />
+          </div>
+          <label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed">
+            I agree to the{' '}
+            <a href="/terms" className="text-secondary-600 hover:text-secondary-700">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" className="text-secondary-600 hover:text-secondary-700">
+              Privacy Policy
+            </a>
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          disabled={!formData.agreeToTerms || loading}
+          className="w-full bg-secondary-500 text-white py-3 px-4 rounded-xl hover:bg-secondary-600 transition-colors font-medium focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? 'Creating Account...' : 'Create Account'}
+        </button>
+      </form>
+
+      <div className="mt-6 text-center">
+        <p className="text-gray-600">
+          Already have an account?{' '}
+          <a href="/login" className="text-secondary-600 hover:text-secondary-700 font-medium">
+            Sign in here
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function SignupForm() {
+  return (
+    <AuthProvider>
+      <SignupFormContent />
+    </AuthProvider>
+  );
+}

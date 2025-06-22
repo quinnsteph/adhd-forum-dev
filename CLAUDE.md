@@ -13,21 +13,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ADHD Forum is a React-based community platform designed specifically for ADHD discussions and support. The application features public and members-only content areas with ADHD-friendly design patterns.
+ADHD Forum is an Astro-based community platform designed specifically for ADHD discussions and support. The application features public and members-only content areas with ADHD-friendly design patterns and uses React components as islands for interactivity.
 
 ## Technology Stack
 
-- **Frontend**: React 18.3.1 + TypeScript 5.5.3
-- **Build Tool**: Vite 5.4.2
-- **Routing**: React Router DOM 6.26.0
+- **Framework**: Astro 5.7.14 with React integration
+- **React**: React 18.3.1 + TypeScript 5.5.3 (for interactive components)
 - **Styling**: Tailwind CSS 3.4.1 with custom ADHD-friendly color palette
-- **Icons**: Lucide React 0.344.0
+- **Icons**: Lucide React 0.344.0 (in React islands)
 - **Linting**: ESLint 9.9.1 with TypeScript configuration
 
 ## Development Commands
 
 ```bash
-npm run dev      # Start development server (localhost:5173)
+npm run dev      # Start development server (localhost:4321)
 npm run build    # Production build
 npm run lint     # Run ESLint across codebase
 npm run preview  # Preview production build locally
@@ -39,25 +38,31 @@ npm run preview  # Preview production build locally
 ```
 src/
 ├── components/          # Reusable UI components
+│   ├── Auth/           # Authentication forms (React islands)
 │   ├── Forum/          # Forum-specific components
 │   ├── Layout/         # Layout components (Header, etc.)
 │   ├── Sidebar/        # Sidebar components
-│   └── Thread/         # Thread-related components
-├── pages/              # Route-based page components
-│   ├── Auth/           # Login/Signup pages
-│   └── [other pages]   # Home, MembersArea, ThreadView, etc.
+│   ├── Thread/         # Thread-related components
+│   └── Layout.astro    # Main layout component
+├── pages/              # File-based routing (Astro pages)
+│   ├── index.astro     # Home page
+│   ├── members.astro   # Members area
+│   ├── login.astro     # Login page
+│   └── signup.astro    # Signup page
+├── contexts/           # React Context providers
 ├── data/               # Mock data for development
 ├── types/              # TypeScript type definitions
+├── utils/              # Utility functions (SSR-safe)
 └── [config files]
 ```
 
 ### Key Architectural Patterns
 
-1. **Component Organization**: Components grouped by feature/domain (Forum, Thread, Layout)
-2. **Page-Based Routing**: Each route corresponds to a page component
-3. **Props Interface Pattern**: All components have typed interfaces
-4. **Mock Data Development**: Centralized mock data in `src/data/mockData.ts`
-5. **Conditional Authentication**: Content visibility based on auth state
+1. **Astro + React Islands**: Static pages with interactive React components
+2. **File-Based Routing**: Astro's built-in routing system
+3. **SSR-Safe Storage**: localStorage checks for `typeof window !== 'undefined'`
+4. **Component Islands**: React components hydrated on demand with `client:load`
+5. **Shared State**: Authentication handled through React Context in islands
 
 ## Core Data Models
 

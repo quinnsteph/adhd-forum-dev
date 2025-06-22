@@ -1,0 +1,159 @@
+---
+import Layout from '../components/Layout.astro';
+import { getThreads } from '../utils/storage';
+
+const threads = getThreads().filter(t => !t.isPublic);
+---
+
+<Layout title="Members Area - ADHD Forum">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-secondary-500 to-accent-500 rounded-2xl text-white p-8 mb-8">
+      <div class="flex items-center space-x-3 mb-4">
+        <span class="text-2xl">👥</span>
+        <h1 class="text-3xl font-display font-bold">Members Area</h1>
+      </div>
+      <p class="text-secondary-100 text-lg leading-relaxed mb-6">
+        Welcome to our private community space. Here you can share more personal experiences, 
+        access support groups, and connect deeply with fellow community members.
+      </p>
+      <div class="flex items-center space-x-6 text-secondary-100">
+        <div class="flex items-center space-x-2">
+          <span>🛡️ Safe & Private</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span>❤️ Supportive Community</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span>💬 Deeper Conversations</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Community Guidelines -->
+    <div class="bg-accent-50 border border-accent-200 rounded-xl p-6 mb-8">
+      <h2 class="font-semibold text-accent-900 mb-3">Members Area Guidelines</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-accent-800">
+        <div class="flex items-start space-x-2">
+          <div class="w-1.5 h-1.5 bg-accent-500 rounded-full mt-2"></div>
+          <p>Respect privacy - what's shared here stays here</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <div class="w-1.5 h-1.5 bg-accent-500 rounded-full mt-2"></div>
+          <p>Use content warnings for sensitive topics</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <div class="w-1.5 h-1.5 bg-accent-500 rounded-full mt-2"></div>
+          <p>Share experiences, not medical advice</p>
+        </div>
+        <div class="flex items-start space-x-2">
+          <div class="w-1.5 h-1.5 bg-accent-500 rounded-full mt-2"></div>
+          <p>Support each other with kindness and empathy</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex space-x-1 bg-gray-100 rounded-xl p-1" id="member-tabs">
+        <button
+          data-tab="all"
+          class="tab-button active px-4 py-2 rounded-lg font-medium transition-colors bg-white text-secondary-600 shadow-sm"
+        >
+          All Discussions
+        </button>
+        <button
+          data-tab="support"
+          class="tab-button px-4 py-2 rounded-lg font-medium transition-colors text-gray-600 hover:text-gray-900"
+        >
+          Support Groups
+        </button>
+        <button
+          data-tab="personal"
+          class="tab-button px-4 py-2 rounded-lg font-medium transition-colors text-gray-600 hover:text-gray-900"
+        >
+          Personal Sharing
+        </button>
+      </div>
+
+      <a
+        href="/new-thread"
+        class="bg-secondary-500 text-white px-4 py-2 rounded-lg hover:bg-secondary-600 transition-colors font-medium"
+      >
+        New Private Thread
+      </a>
+    </div>
+
+    <!-- Thread Feed -->
+    <div class="space-y-6" id="members-thread-feed">
+      {threads.map((thread) => (
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-3">
+              <img
+                src={thread.author.avatar}
+                alt={thread.author.username}
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <h3 class="font-medium text-gray-900">{thread.author.username}</h3>
+                <p class="text-sm text-gray-500">{thread.createdAt.toLocaleDateString()}</p>
+              </div>
+            </div>
+            <span class="text-sm text-orange-600">🔒 Members Only</span>
+          </div>
+          
+          <h2 class="text-xl font-semibold text-gray-900 mb-3">{thread.title}</h2>
+          <p class="text-gray-700 mb-4">{thread.content.substring(0, 200)}...</p>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4 text-gray-500">
+              <span class="text-sm">❤️ {thread.likes}</span>
+              <span class="text-sm">💬 {thread.commentCount}</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              {thread.tags.slice(0, 3).map((tag) => (
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-lg text-xs">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Support Resources -->
+    <div class="mt-12 bg-gradient-to-r from-coral/10 to-warm/20 rounded-2xl p-6">
+      <h3 class="font-semibold text-gray-900 mb-4">Need Additional Support?</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl p-4">
+          <h4 class="font-medium text-gray-900 mb-2">Crisis Resources</h4>
+          <p class="text-sm text-gray-600 mb-3">
+            If you're in crisis, please reach out for professional help immediately.
+          </p>
+          <a href="#" class="text-coral hover:text-red-600 font-medium text-sm">
+            Crisis Hotlines →
+          </a>
+        </div>
+        <div class="bg-white rounded-xl p-4">
+          <h4 class="font-medium text-gray-900 mb-2">Find a Therapist</h4>
+          <p class="text-sm text-gray-600 mb-3">
+            Directory of ADHD-friendly mental health professionals.
+          </p>
+          <a href="#" class="text-secondary-600 hover:text-secondary-700 font-medium text-sm">
+            Search Directory →
+          </a>
+        </div>
+        <div class="bg-white rounded-xl p-4">
+          <h4 class="font-medium text-gray-900 mb-2">ADHD Resources</h4>
+          <p class="text-sm text-gray-600 mb-3">
+            Evidence-based resources and tools for managing ADHD.
+          </p>
+          <a href="#" class="text-accent-600 hover:text-accent-700 font-medium text-sm">
+            Browse Resources →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</Layout>

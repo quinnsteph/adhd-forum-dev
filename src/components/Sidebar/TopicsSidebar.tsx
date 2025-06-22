@@ -89,10 +89,18 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
 
     updateOnlineMembers();
     
-    // Update every 30 seconds to simulate members coming/going
-    const interval = setInterval(updateOnlineMembers, 30000);
+    // Set up random intervals between 2-8 minutes to simulate realistic member activity
+    const scheduleNextUpdate = () => {
+      const randomDelay = Math.floor(Math.random() * 360000) + 120000; // 2-8 minutes in milliseconds
+      setTimeout(() => {
+        updateOnlineMembers();
+        scheduleNextUpdate(); // Schedule the next random update
+      }, randomDelay);
+    };
     
-    return () => clearInterval(interval);
+    scheduleNextUpdate();
+    
+    // No need to return cleanup since we're using setTimeout instead of setInterval
   }, [allMembers, trackFeature]);
 
   const visibleTopics = mockTopics.filter(topic => topic.isPublic || isAuthenticated);
