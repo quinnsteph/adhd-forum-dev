@@ -85,9 +85,9 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
 
     updateOnlineMembers();
     
-    // Set up random intervals between 2-8 minutes to simulate realistic member activity
+    // Set up random intervals between 15-30 minutes to simulate realistic member activity
     const scheduleNextUpdate = () => {
-      const randomDelay = Math.floor(Math.random() * 360000) + 120000; // 2-8 minutes in milliseconds
+      const randomDelay = Math.floor(Math.random() * 900000) + 900000; // 15-30 minutes in milliseconds
       setTimeout(() => {
         updateOnlineMembers();
         scheduleNextUpdate(); // Schedule the next random update
