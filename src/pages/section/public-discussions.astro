@@ -1,0 +1,8 @@
+---
+import Layout from '../../components/Layout.astro';
+import SectionView from '../../components/SectionView.tsx';
+---
+
+<Layout title="ADHD Forum - Public Discussions">
+  <SectionView client:only="react" sectionId="public-discussions" />
+</Layout>
