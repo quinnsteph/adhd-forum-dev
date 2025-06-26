@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, Users, Lightbulb, Lock } from 'lucide-react';
 import { mockTopics, mockUsers } from '../../data/mockData';
-import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface TopicsSidebarProps {
   isVisible: boolean;
@@ -59,7 +58,6 @@ const additionalMembers = [
 
 export default function TopicsSidebar({ isVisible, isAuthenticated = false }: TopicsSidebarProps) {
   const [onlineMembers, setOnlineMembers] = useState<typeof mockUsers>([]);
-  const { trackFeature } = useAnalytics();
 
   const motivationalQuotes = [
     "Your ADHD brain is not broken. It's different, and different can be wonderful.",
@@ -83,8 +81,6 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
       const newOnlineMembers = shuffled.slice(0, randomCount);
       setOnlineMembers(newOnlineMembers);
       
-      // Track members online view
-      trackFeature.membersOnline(newOnlineMembers.length);
     };
 
     updateOnlineMembers();
@@ -101,7 +97,7 @@ export default function TopicsSidebar({ isVisible, isAuthenticated = false }: To
     scheduleNextUpdate();
     
     // No need to return cleanup since we're using setTimeout instead of setInterval
-  }, [allMembers, trackFeature]);
+  }, [allMembers]);
 
   const visibleTopics = mockTopics.filter(topic => topic.isPublic || isAuthenticated);
 

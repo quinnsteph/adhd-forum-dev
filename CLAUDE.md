@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository as well as inscructions
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository as well as instructions
 
 1. First think through the problem, read the codebase for relevant files, and write a plan to projectplan.md.
 2. The plan should have a list of todo items that you can check off as you complete them
@@ -49,7 +49,7 @@ src/
 │   ├── members.astro   # Members area
 │   ├── login.astro     # Login page
 │   └── signup.astro    # Signup page
-├── contexts/           # React Context providers
+├── contexts/           # React Context providers (AuthContext)
 ├── data/               # Mock data for development
 ├── types/              # TypeScript type definitions
 ├── utils/              # Utility functions (SSR-safe)
@@ -106,9 +106,10 @@ export default function Component({ requiredProp, optionalProp = false }: Compon
 ```
 
 ### Authentication Flow
-- Auth state managed in `App.tsx` and passed as props
-- Conditional rendering based on `isAuthenticated` prop
-- Login/signup forms in `src/pages/Auth/`
+- Auth state managed through React Context (`AuthContext`)
+- Context provider wraps the main app component
+- Components access auth state via `useAuth()` hook
+- Login/signup forms handle authentication through context methods
 
 ### Styling Conventions
 - Utility-first Tailwind approach
@@ -125,8 +126,9 @@ export default function Component({ requiredProp, optionalProp = false }: Compon
 ## Current Limitations
 
 - **No Backend**: Uses mock data only
-- **Simulated Auth**: Authentication state is not persistent
+- **Simulated Auth**: Authentication state is not persistent across browser sessions
 - **Static Content**: No real-time updates or data persistence
+- **No Analytics**: Analytics tracking has been removed from the codebase
 
 ## Common Tasks
 
@@ -137,8 +139,8 @@ export default function Component({ requiredProp, optionalProp = false }: Compon
 4. Import and use Lucide icons for consistency
 
 ### Adding New Pages
-1. Create page component in `src/pages/`
-2. Add route to `App.tsx` with React Router
+1. Create `.astro` page component in `src/pages/`
+2. Use Astro's file-based routing system
 3. Ensure proper authentication checks if needed
 4. Follow responsive design patterns
 

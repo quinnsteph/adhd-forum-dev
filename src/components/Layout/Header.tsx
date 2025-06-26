@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Brain, Menu, X, Focus, Globe, Lock } from 'lucide-react';
 // import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useAnalytics } from '../../hooks/useAnalytics';
 
 interface HeaderProps {
   focusMode: boolean;
@@ -12,16 +11,11 @@ interface HeaderProps {
 export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { trackFeature, trackNavigation } = useAnalytics();
 
   const handleFocusModeToggle = () => {
     onToggleFocus();
-    trackFeature.focusMode(!focusMode);
   };
 
-  const handleNavigationClick = (section: string, isPublic: boolean) => {
-    trackNavigation.section(section, section, isPublic);
-  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -43,7 +37,6 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
             <a 
               href="/" 
               className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
-              onClick={() => handleNavigationClick('public', true)}
             >
               <div className="flex items-center space-x-1">
                 <Globe className="w-4 h-4" />
@@ -54,7 +47,6 @@ export default function Header({ focusMode, onToggleFocus }: HeaderProps) {
               <a 
                 href="/members" 
                 className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
-                onClick={() => handleNavigationClick('members', false)}
               >
                 <div className="flex items-center space-x-1">
                   <Lock className="w-4 h-4" />
